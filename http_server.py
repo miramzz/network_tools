@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os
 import sys
-import time
 import datetime
 import socket
 from multiprocessing import Process
@@ -28,14 +27,14 @@ Accept-Ranges:  none\r\n\
 Content-Length: 438\r\n\
 Connection: close\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\r\n""".format(msg_type, date_time)
-    return byte_string
+    return bytearray(byte_string)
 
 def check_request_method(method):
     if method.upper() != 'GET':
         return 500
 
 def check_request_uri(uri):
-    if uri.upper() != 'something':
+    if uri != "/path/to/index.html":
         return 400
 
 def check_request_protocol(protocol):
@@ -101,17 +100,17 @@ def echo_server():
             if (len(recv_msg) < buffsize):
                 break
 
-        conn.sendall(my_msg)
+        conn.sendall(create_uri_request(my_msg))
         conn.shutdown(socket.SHUT_WR)
         conn.close()
 
     my_socket.close()
 
 if __name__=="__main__":
-    # p = Process(target=echo_server)
-    # p.start()
-    # p.join()
-    print create_uri_request(b"GET /path/to/index.html HTTP/1.1\r\nHost: www.mysite1.com:80")
+    p = Process(target=echo_server)
+    p.start()
+    p.join()
+    #print create_uri_request(b"GET /path/to/index.html HTTP/1.1\r\nHost: www.mysite1.com:80")
 
 
 
