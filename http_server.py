@@ -5,10 +5,12 @@ import datetime
 import socket
 from multiprocessing import Process
 
+# sudo lsof -n | grep LISTEN
 
 err_tags = {400:'Bad Request',
             403:'Forbidden',
             404:'Page Not Found',
+            405:'Method Not Allowed',
             408:'Request Timeout',
             429:'Too Many Requests',
             444:'No Response',
@@ -16,8 +18,10 @@ err_tags = {400:'Bad Request',
             200:'OK'}
 
 def create_http_request(msg_type):
-    date_time = datetime.datetime.now()
-    byte_string = b"""\
+    # for test
+    date_time = '2014-06-12 16:39:06.162234'
+    #date_time = datetime.datetime.now()
+    byte_string = """\
 HTTP/1.1 {}\r\n\
 Date: {}\r\n\
 Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\r\n\
@@ -26,16 +30,18 @@ Etag: "3f80f-1b6-3e1cb03b"\r\n\
 Accept-Ranges:  none\r\n\
 Content-Length: 438\r\n\
 Connection: close\r\n\
-Content-Type: text/html; charset=UTF-8\r\n\r\n""".format(msg_type, date_time)
+Content-Type: text/html; charset=UTF-8\r\n\r\n\
+""".format(msg_type, date_time)
+    print byte_string
     return bytearray(byte_string)
 
 def check_request_method(method):
     if method.upper() != 'GET':
-        return 500
+        return 405
 
 def check_request_uri(uri):
-    if uri != "/path/to/index.html":
-        return 400
+    if uri != "/":
+        return 405
 
 def check_request_protocol(protocol):
     if protocol.upper() != 'HTTP/1.1':
@@ -72,6 +78,8 @@ def create_uri_request(recv_msg):
     for item in recv_msg[1:]:
         if 'host:' == item.lower().split()[0]:
             host = item.split()[1]
+            break
+
     try:
         check_err_response(method, uri, protocol, host)
     except:
@@ -86,9 +94,10 @@ def echo_server():
     socket.AF_INET,socket.
     SOCK_STREAM,socket.IPPROTO_IP)
 
-    address = ('127.0.0.1', 50000)
+    address = ('127.0.0.1', 5000)
     buffsize = 32
 
+    my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     my_socket.bind(address)
     my_socket.listen(1)
     while True :
@@ -99,7 +108,6 @@ def echo_server():
             my_msg += recv_msg
             if (len(recv_msg) < buffsize):
                 break
-
         conn.sendall(create_uri_request(my_msg))
         conn.shutdown(socket.SHUT_WR)
         conn.close()
@@ -110,6 +118,7 @@ if __name__=="__main__":
     p = Process(target=echo_server)
     p.start()
     p.join()
+
     #print create_uri_request(b"GET /path/to/index.html HTTP/1.1\r\nHost: www.mysite1.com:80")
 
 
