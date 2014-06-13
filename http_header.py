@@ -19,6 +19,7 @@ _http_tags = {}
 def create_http_request():
     _http_tags['date_time'] = '2014-06-12 16:39:06.162234'
     #_http_tags['date_time'] = datetime.datetime.now()
+    _http_tags['cont_len'] = len(_http_tags['content'])+20
     byte_string = b"""\
 HTTP/1.1 {msg_code}\r\n\
 Date: {date_time}\r\n\
@@ -26,29 +27,35 @@ Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\r\n\
 Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT\r\n\
 Etag: "3f80f-1b6-3e1cb03b"\r\n\
 Accept-Ranges:  none\r\n\
-Content-Length: 438\r\n\
+Content-Length: {cont_len}\r\n\
 Connection: close\r\n\
 Content-Type: {cont_type}; charset=UTF-8\r\n\r\n\
 {content}
 """.format(**_http_tags)
     return byte_string
 
-def list_dirs():
-    uri = _http_tags['uri']
-    _l = []
+indentation = "----"
+def list_dirs(uri,l, ind_level):
     for dirpath, _dirs, files in os.walk(uri):
+        ind = indentation*ind_level
         for _file in files:
-            _tmp = os.path.join(dirpath, _file)
-        _l.append(_tmp)
-    _http_tags['content'] = '<html><h1>{}</h1></html>'.format(_l)
-    print _l
+            l.append('{}{}'.format(ind, _file))
+        for _dir in _dirs:
+            l.append('{}{}'.format(ind, _dir))
+            new_dir = dirpath + _dir
+            list_dirs(os.path.abspath(new_dir), l, (ind_level+1))
 
 def check_uri_resource():
     uri = _http_tags['uri']
     file_name = os.path.split(uri)[1]
 
     if os.path.isdir(_http_tags['uri']):
-        list_dirs()
+        l = []
+        list_dirs(uri, l, 1)
+        _str = ''
+        for item in l:
+            _str += '<br/>' + item
+        _http_tags['content'] = '<html><h3>{}</h3></html>'.format(_str)
     elif not os.path.exists(uri) :
         return 404
     else  :
@@ -56,6 +63,7 @@ def check_uri_resource():
         _http_tags['content'] = '<html><h1>{}</h1></html>'.format(msg_cont)
 
     _http_tags['cont_type'] = mimetypes.guess_type(file_name)[0]
+    print _http_tags
 
 
 def check_request_method():
@@ -65,7 +73,7 @@ def check_request_method():
 def check_request_uri():
     if _http_tags['uri'][0] != '/':
         return  404
-    _http_tags['uri'] = "webroot"+uri
+    _http_tags['uri'] = '/Users/muazzezmira/Desktop/webroot'+ _http_tags['uri']
 
 def check_request_protocol():
     if _http_tags['protocol'] != 'HTTP/1.1':
