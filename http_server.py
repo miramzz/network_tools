@@ -36,8 +36,7 @@ if __name__=="__main__":
     # p = Process(target=echo_server)
     # p.start()
     # p.join()
-
-    print hh.create_uri_request(b"GET /path/to/index.html HTTP/1.1\r\nHost: www.mysite1.com:80")
-
+    print hh.create_uri_request(b"GET /Users/muazzezmira/Desktop/webroot/sample.txt HTTP/1.1\r\nHost: www.mysite1.com:80")
+    #print hh.create_uri_request(b"GET /Users/muazzezmira/Desktop/webroot HTTP/1.1\r\nHost: www.mysite1.com:80")
 
 
