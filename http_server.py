@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-import os
 import sys
 import datetime
 import socket
-from multiprocessing import Process
 
 # sudo lsof -n | grep LISTEN
 
@@ -17,20 +15,20 @@ err_tags = {400:'Bad Request',
             500:'Internal Server Error',
             200:'OK'}
 
-def create_http_request(msg_type):
-    # for test
+def create_http_response(msg_type):
+    # this line is for testing
     date_time = '2014-06-12 16:39:06.162234'
     #date_time = datetime.datetime.now()
-    byte_string = """\
-HTTP/1.1 {}\r\n\
-Date: {}\r\n\
-Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\r\n\
-Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT\r\n\
-Etag: "3f80f-1b6-3e1cb03b"\r\n\
-Accept-Ranges:  none\r\n\
-Content-Length: 438\r\n\
-Connection: close\r\n\
-Content-Type: text/html; charset=UTF-8\r\n\r\n\
+    byte_string = b"""\
+HTTP/1.1 {}\r\n
+Date: {}\r\n
+Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\r\n
+Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT\r\n
+Etag: "3f80f-1b6-3e1cb03b"\r\n
+Accept-Ranges:  none\r\n
+Content-Length: 438\r\n
+Connection: close\r\n
+Content-Type: text/html; charset=UTF-8\r\n\r\n
 """.format(msg_type, date_time)
     print byte_string
     return bytearray(byte_string)
@@ -66,10 +64,10 @@ def check_err_response(method,uri,protocol,host):
         raise NameError(err_message)
 
 def create_err_respond(err_code):
-    return create_http_request(err_code)
+    return create_http_response(err_code)
 
 def create_ok_respond():
-    return create_http_request('200 OK')
+    return create_http_response('200 OK')
 
 def create_uri_request(recv_msg):
     recv_msg = recv_msg.split('\r\n')
@@ -79,10 +77,9 @@ def create_uri_request(recv_msg):
         if 'host:' == item.lower().split()[0]:
             host = item.split()[1]
             break
-
     try:
         check_err_response(method, uri, protocol, host)
-    except:
+    except NameError:
         err_code = sys.exc_info()[1]
         return create_err_respond(err_code)
     else:
@@ -97,6 +94,7 @@ def echo_server():
     address = ('127.0.0.1', 5000)
     buffsize = 32
 
+    # this line is for macs
     my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     my_socket.bind(address)
     my_socket.listen(1)
@@ -115,10 +113,7 @@ def echo_server():
     my_socket.close()
 
 if __name__=="__main__":
-    p = Process(target=echo_server)
-    p.start()
-    p.join()
-
+    echo_server()
     #print create_uri_request(b"GET /path/to/index.html HTTP/1.1\r\nHost: www.mysite1.com:80")
 
 
