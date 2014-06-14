@@ -12,18 +12,21 @@ def echo_server():
         print u"Failed to create socket"
         sys.exit()
 
-    address = ('127.0.0.1', 50000)
-    buffsize = 32
+    address = ('127.0.0.1', 5000)
+    buffsize = 4096
     my_msg = ''
 
+    my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     my_socket.bind(address)
     my_socket.listen(1)
-    conn, client_add = my_socket.accept()
-    while  True:
-        recv_msg = conn.recv(buffsize)
-        my_msg += recv_msg
-        if (len(recv_msg) < buffsize):
-            break
+    while True:
+        conn, client_add = my_socket.accept()
+        while  True:
+            recv_msg = conn.recv(buffsize)
+            my_msg += recv_msg
+            if (len(recv_msg) < buffsize):
+                break
+    conn.shutdown(socket.SHUT_RD)
     conn.sendall(my_msg)
     conn.shutdown(socket.SHUT_WR)
     conn.close()
