@@ -30,8 +30,7 @@ Content-Length: 438\r\n
 Connection: close\r\n
 Content-Type: text/html; charset=UTF-8\r\n\r\n
 """.format(msg_type, date_time)
-    print byte_string
-    return bytearray(byte_string)
+    return byte_string
 
 def check_request_method(method):
     if method.upper() != 'GET':
@@ -45,10 +44,6 @@ def check_request_protocol(protocol):
     if protocol.upper() != 'HTTP/1.1':
         return 400
 
-def check_request_host(host):
-    if host :
-        return 0
-
 def check_err_response(method,uri,protocol,host):
     if check_request_method(method):
         err_code = check_request_method(method)
@@ -56,21 +51,14 @@ def check_err_response(method,uri,protocol,host):
         err_code = check_request_uri(uri)
     elif check_request_protocol(protocol):
         err_code = check_request_protocol(protocol)
-    else:
-        err_code = check_request_host(host)
 
     if err_tags.has_key(err_code) :
         err_message = "{} {}".format(err_code, err_tags.get(err_code))
         raise NameError(err_message)
 
-def create_err_respond(err_code):
-    return create_http_response(err_code)
-
-def create_ok_respond():
-    return create_http_response('200 OK')
-
 def create_uri_request(recv_msg):
     recv_msg = recv_msg.split('\r\n')
+    print recv_msg
     method, uri, protocol = recv_msg[0].split()[:3]
 
     for item in recv_msg[1:]:
@@ -81,9 +69,9 @@ def create_uri_request(recv_msg):
         check_err_response(method, uri, protocol, host)
     except NameError:
         err_code = sys.exc_info()[1]
-        return create_err_respond(err_code)
+        return create_http_response(err_code)
     else:
-        return create_ok_respond()
+        return create_http_response('200 OK')
 
 
 def echo_server():
@@ -92,7 +80,7 @@ def echo_server():
     SOCK_STREAM,socket.IPPROTO_IP)
 
     address = ('127.0.0.1', 5000)
-    buffsize = 32
+    buffsize = 4096
 
     # this line is for macs
     my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -106,6 +94,7 @@ def echo_server():
             my_msg += recv_msg
             if (len(recv_msg) < buffsize):
                 break
+        conn.shutdown(socket.SHUT_RD)
         conn.sendall(create_uri_request(my_msg))
         conn.shutdown(socket.SHUT_WR)
         conn.close()
