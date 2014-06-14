@@ -17,9 +17,11 @@ _http_tags = {}
 
 
 def create_http_request():
+    print _http_tags
+    print
     _http_tags['date_time'] = datetime.datetime.now()
     _http_tags['cont_len'] = len(_http_tags['content'])
-    byte_string = b"""\
+    byte_string = """\
 HTTP/1.1 {msg_code}\r\n\
 Date: {date_time}\r\n\
 Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\r\n\
@@ -31,7 +33,7 @@ Connection: close\r\n\
 Content-Type: {cont_type}; charset=UTF-8\r\n\r\n\
 {content}
 """.format(**_http_tags)
-    return byte_string
+    return bytearray(byte_string)
 
 indentation = "----"
 def list_dirs(uri,l, ind_level):
@@ -53,7 +55,7 @@ def check_uri_resource():
         list_dirs(uri, l, 1)
         _str = ''
         for item in l:
-            _str += '<br/>' + item
+            _str += '\r\n' + item
         _http_tags['content'] = '{}'.format(_str)
     elif not os.path.exists(uri) :
         return 404
