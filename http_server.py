@@ -57,7 +57,7 @@ def check_err_response(method,uri,protocol,host):
         err_message = "{} {}".format(err_code, err_tags.get(err_code))
         raise NameError(err_message)
 
-def create_uri_request(recv_msg):
+def create_response(recv_msg):
     recv_msg = recv_msg.split('\r\n')
     method, uri, protocol = recv_msg[0].split()[:3]
 
@@ -95,7 +95,7 @@ def echo_server():
             if (len(recv_msg) < buffsize):
                 break
         conn.shutdown(socket.SHUT_RD)
-        conn.sendall(create_uri_request(my_msg))
+        conn.sendall(create_response(my_msg))
         conn.shutdown(socket.SHUT_WR)
         conn.close()
 
