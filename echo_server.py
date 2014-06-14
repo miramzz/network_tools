@@ -13,17 +13,19 @@ def echo_server():
         sys.exit()
 
     address = ('127.0.0.1', 50000)
-    buffsize = 32
+    buffsize = 4096
     my_msg = ''
 
     my_socket.bind(address)
     my_socket.listen(1)
-    conn, client_add = my_socket.accept()
-    while  True:
-        recv_msg = conn.recv(buffsize)
-        my_msg += recv_msg
-        if (len(recv_msg) < buffsize):
-            break
+    while True :
+        conn, client_add = my_socket.accept()
+        while  True:
+            recv_msg = conn.recv(buffsize)
+            my_msg += recv_msg
+            if (len(recv_msg) < buffsize):
+                break
+    conn.shutdown(socket.SHUT_RD)
     conn.sendall(my_msg)
     conn.shutdown(socket.SHUT_WR)
     conn.close()
