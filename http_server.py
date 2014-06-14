@@ -19,7 +19,7 @@ def create_http_response(msg_type):
     # this line is for testing
     date_time = '2014-06-12 16:39:06.162234'
     #date_time = datetime.datetime.now()
-    byte_string = b"""\
+    byte_string = """\
 HTTP/1.1 {}\r\n
 Date: {}\r\n
 Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\r\n
@@ -30,7 +30,7 @@ Content-Length: 438\r\n
 Connection: close\r\n
 Content-Type: text/html; charset=UTF-8\r\n\r\n
 """.format(msg_type, date_time)
-    return byte_string
+    return bytearray(byte_string)
 
 def check_request_method(method):
     if method.upper() != 'GET':
@@ -45,6 +45,7 @@ def check_request_protocol(protocol):
         return 400
 
 def check_err_response(method,uri,protocol,host):
+    err_code = 0
     if check_request_method(method):
         err_code = check_request_method(method)
     elif check_request_uri(uri):
@@ -58,7 +59,6 @@ def check_err_response(method,uri,protocol,host):
 
 def create_uri_request(recv_msg):
     recv_msg = recv_msg.split('\r\n')
-    print recv_msg
     method, uri, protocol = recv_msg[0].split()[:3]
 
     for item in recv_msg[1:]:
