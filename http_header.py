@@ -13,13 +13,12 @@ _err_tags = {400:'Bad Request',
             444:'No Response',
             500:'Internal Server Error',
             200:'OK'}
-
 _http_tags = {}
 
+
 def create_http_request():
-    _http_tags['date_time'] = '2014-06-12 16:39:06.162234'
-    #_http_tags['date_time'] = datetime.datetime.now()
-    _http_tags['cont_len'] = len(_http_tags['content'])+20
+    _http_tags['date_time'] = datetime.datetime.now()
+    _http_tags['cont_len'] = len(_http_tags['content'])
     byte_string = b"""\
 HTTP/1.1 {msg_code}\r\n\
 Date: {date_time}\r\n\
@@ -55,16 +54,14 @@ def check_uri_resource():
         _str = ''
         for item in l:
             _str += '<br/>' + item
-        _http_tags['content'] = '<html><h3>{}</h3></html>'.format(_str)
+        _http_tags['content'] = '{}'.format(_str)
     elif not os.path.exists(uri) :
         return 404
     else  :
         msg_cont = open(uri,'rb').read()
-        _http_tags['content'] = '<html><h1>{}</h1></html>'.format(msg_cont)
+        _http_tags['content'] = msg_cont
 
     _http_tags['cont_type'] = mimetypes.guess_type(file_name)[0]
-    print _http_tags
-
 
 def check_request_method():
     if _http_tags['method'] != 'GET':
@@ -82,6 +79,7 @@ def check_request_protocol():
 def check_err_response():
     _error_code = 0
     check_list = 0
+
     try :
         check_list = [check_request_method(), check_request_protocol(),
                       check_request_uri(), check_uri_resource()]
@@ -97,9 +95,7 @@ def check_err_response():
     else :
         _http_tags['msg_code'] = '200 OK'
 
-
 def create_uri_request(recv_msg):
-    #import pdb; pdb.set_trace()
     recv_msg = recv_msg.split('\r\n')
     _http_tags['method'], _http_tags['uri'], _http_tags['protocol'] = recv_msg[0].split()[:3]
 
