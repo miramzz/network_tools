@@ -33,7 +33,7 @@ def echo_server():
                 break
 
         conn.shutdown(socket.SHUT_RD)
-        conn.sendall(hh.create_uri_request(my_msg))
+        conn.sendall(hh.create_response(my_msg))
         conn.shutdown(socket.SHUT_WR)
         conn.close()
 

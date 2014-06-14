@@ -16,7 +16,7 @@ _err_tags = {400:'Bad Request',
 _http_tags = {}
 
 
-def create_http_request():
+def create_http_response():
     print _http_tags
     print
     _http_tags['date_time'] = datetime.datetime.now()
@@ -97,7 +97,7 @@ def check_err_response():
     else :
         _http_tags['msg_code'] = '200 OK'
 
-def create_uri_request(recv_msg):
+def create_response(recv_msg):
     recv_msg = recv_msg.split('\r\n')
     _http_tags['method'], _http_tags['uri'], _http_tags['protocol'] = recv_msg[0].split()[:3]
 
@@ -106,7 +106,7 @@ def create_uri_request(recv_msg):
             _http_tags['Host'] = item.split()[1]
             break
     check_err_response()
-    return create_http_request()
+    return create_http_response()
 
 
 
