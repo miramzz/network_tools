@@ -1,6 +1,6 @@
 Branch : http1
 
-echo_client.py :\r\n
+echo_client.py :
     This is the client side. It creates a socket and make a connectiont o server side.
     Limitations :
         Buffersize = 4096.
