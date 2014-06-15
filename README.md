@@ -1,9 +1,6 @@
-network_tools
-=============
+Branch : http1
 
-branch : http1
-=========
-echo_client.py :
+echo_client.py :\r\n
     This is the client side. It creates a socket and make a connectiont o server side.
     Limitations :
         Buffersize = 4096.
