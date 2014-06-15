@@ -8,7 +8,7 @@
     Return value : Sends a http request message to server side<br\>
 <h5>http_server.py :<br\></h5>
     This is server side. It creates a socket and process requests.
-    Limitetions :
+    Limitations :
         Buffersize = 4096
     Input    : No input
     Output : No output
