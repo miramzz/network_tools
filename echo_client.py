@@ -32,8 +32,10 @@ def echo_client(message):
 
 
 if __name__ == "__main__":
+    data = ''
     try:
         data = sys.argv[1]
     except IndexError:
         print u"Enter a message to be sent"
+        sys.exit()
     echo_client(bytearray(data))
