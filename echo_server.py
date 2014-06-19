@@ -4,11 +4,11 @@ import sys
 from multiprocessing import Process
 import echo_client as ec
 
+
 def echo_server():
-    try :
+    try:
         my_socket = socket.socket(
-            socket.AF_INET,socket.
-            SOCK_STREAM,socket.IPPROTO_IP
+            socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP
             )
     except socket.error:
         print u"Failed to create socket"
@@ -20,13 +20,14 @@ def echo_server():
     my_socket.bind(address)
     my_socket.listen(1)
 
-    while True :
+    while True:
         conn, client_add = my_socket.accept()
         my_msg = ''
-        while  True:
+        while True:
             recv_msg = conn.recv(buffsize)
             my_msg += recv_msg
             if (len(recv_msg) < buffsize):
+                print recv_msg
                 break
         conn.shutdown(socket.SHUT_RD)
         conn.sendall(my_msg)
@@ -34,20 +35,14 @@ def echo_server():
     conn.close()
     my_socket.close()
 
-if __name__=="__main__":
-    try :
+if __name__ == "__main__":
+    try:
         data = sys.argv[1]
-    except IndexError :
+    except IndexError:
         echo_server()
-    else :
+    else:
         ec.create_conn()
         p = Process(target=echo_server)
         p.start()
         p.join()
         ec.send_msg(bytearray(data))
-
-
-
-
-
-
