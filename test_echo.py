@@ -1,5 +1,3 @@
-import pytest
-import socket
 from os import urandom
 from echo_client import echo_client
 
@@ -21,8 +19,3 @@ def test_string():
 def test_long():
     long_msg = b'\x00'*31
     assert echo_client(long_msg) == long_msg
-
-
-def test_error():
-    with pytest.raises(socket.error):
-        echo_client(u"Eot test is done")
