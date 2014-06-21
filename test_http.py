@@ -1,8 +1,4 @@
 from http_server import create_uri_request
-import os
-import sys
-import datetime
-
 
 
 def http_msg(msg_type):
@@ -30,26 +26,31 @@ Host: www.example.com\r\n\
 """
     assert create_uri_request(bytearray(msg)) == http_msg("200 OK")
 
-# method test if we send PUT instead of GET
+
 def test_get():
+    # method test if we send PUT instead of GET
     msg = """\
 PUT / HTTP/1.1\r\n\
 Host: www.example.com\r\n\
 <CRLF>"
 """
-    assert create_uri_request(bytearray(msg)) == http_msg("405 Method Not Allowed")
+    assert create_uri_request(bytearray(msg)) == http_msg(
+        "405 Method Not Allowed")
 
-# uri test if we send not root
+
 def test_uri():
+    # uri test if we send not root
     msg = """\
 GET /index.html HTTP/1.1\r\n\
 Host: www.example.com\r\n\
 <CRLF>"
 """
-    assert create_uri_request(bytearray(msg)) == http_msg("405 Method Not Allowed")
+    assert create_uri_request(bytearray(msg)) == http_msg(
+        "405 Method Not Allowed")
 
-# protocol test if we send 1.0
+
 def test_protocol():
+    # protocol test if we send 1.0
     msg = """\
 GET / HTTP/1.0\r\n\
 Host: www.example.com\r\n\
@@ -58,15 +59,11 @@ Host: www.example.com\r\n\
     assert create_uri_request(bytearray(msg)) == http_msg("400 Bad Request")
 
 
-# protocol test if we don't send http/1.1
 def test_protocol2():
+    # protocol test if we don't send http/1.1
     msg = """\
 GET / HTP\r\n\
 Host: www.example.com\r\n\
 <CRLF>"
 """
     assert create_uri_request(bytearray(msg)) == http_msg("400 Bad Request")
-
-
-
-
