@@ -12,27 +12,37 @@ _http_tags = {}
 
 
 def create_http_response():
+    if _http_tags['msg_code'] != '200 OK':
+        return create_http_err()
     # for tests
     _http_tags['date_time'] = "2014-06-12 16:39:06.162234"
     # _http_tags['date_time'] = datetime.datetime.now()
-    if 'content' not in _http_tags.keys():
-        _http_tags['content'] = ''
-        _http_tags['cont_type'] = 'None'
-    _http_tags['cont_len'] = 0
-
+    _http_tags['cont_len'] = len(_http_tags['content'])
     byte_string = b"""\
 HTTP/1.1 {msg_code}\r\n\
 Date: {date_time}\r\n\
 Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\r\n\
 Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT\r\n\
 Etag: "3f80f-1b6-3e1cb03b"\r\n\
-Accept-Ranges:  none\r\n\
+Accept-Ranges: none\r\n\
 Content-Length: {cont_len}\r\n\
 Connection: close\r\n\
 Content-Type: {cont_type}; charset=UTF-8\r\n\r\n\
 {content}
 """.format(**_http_tags)
     return byte_string
+
+
+def create_http_err():
+    _http_tags['date_time'] = "2014-06-12 16:39:06.162234"
+    byte_string = b"""\
+HTTP/1.1 {msg_code}\r\n\
+Date: {date_time}\r\n\
+Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\r\n\
+Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT\r\n\
+""".format(**_http_tags)
+    return byte_string
+
 
 indentation = "----"
 
