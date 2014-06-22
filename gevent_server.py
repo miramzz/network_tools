@@ -5,7 +5,7 @@ import http_header as hh
 buffsize = 4096
 
 
-def server(conn):
+def server(conn, addr):
     my_msg = ''
     while True:
         chunk = conn.recv(buffsize)
@@ -17,23 +17,24 @@ def server(conn):
     conn.shutdown(socket.SHUT_WR)
     conn.close()
 
-def client(address) :
+
+def client():
     my_socket = socket.socket(
-            socket.AF_INET,
-            socket.SOCK_STREAM,
-            socket.IPPROTO_IP
-            )
+        socket.AF_INET,
+        socket.SOCK_STREAM,
+        socket.IPPROTO_IP
+        )
     my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    my_socket.bind(address)
+    my_socket.bind(('127.0.0.1', 50000))
     my_socket.listen(1)
     my_response = server(my_socket.accept())
     my_response.close()
     return my_response
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     from gevent.server import StreamServer
     from gevent.monkey import patch_all
     patch_all()
-    server_ = StreamServer(('127.0.0.1', 5000), client)
+    server_ = StreamServer(('127.0.0.1', 50000), server)
     server_.serve_forever()

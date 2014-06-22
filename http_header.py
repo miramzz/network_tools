@@ -34,12 +34,10 @@ Connection: close\r\n\
 Content-Type: {cont_type}; charset=UTF-8\r\n\r\n\
 {content}
 """.format(**_http_tags)
-    print byte_string
     return byte_string
 
 
 def create_http_err():
-    print "ff  "
     _http_tags['date_time'] = "2014-06-12 16:39:06.162234"
     byte_string = b"""\
 HTTP/1.1 {msg_code}\r\n\

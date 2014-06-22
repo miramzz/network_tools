@@ -1,4 +1,5 @@
 from http_header import create_response
+import gevent_server
 
 date_time = "2014-06-12 16:39:06.162234"
 
@@ -46,6 +47,7 @@ GET / HTTP/1.1\r\n
 Host: www.example.com\r\n\r\n
 """
     assert create_response(msg) == http_msg('200 OK', 230, 'None')
+    assert gevent_server()
 
 
 def test_get():
