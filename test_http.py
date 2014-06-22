@@ -12,7 +12,8 @@ content = b"""----.DS_Store\r
 --------Sample_Scene_Balls.jpg\r
 ----JPEG_example.jpg\r
 ----sample_1.png\r
-----Sample_Scene_Balls.jpg"""
+----Sample_Scene_Balls.jpg
+"""
 
 
 def http_msg(msg_type, cont_len, cont_type):
@@ -40,45 +41,44 @@ Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT\r\n\
 
 
 def test_200_OK():
-    # test if it is working
     msg = b"""\
-GET / HTTP/1.1\r\n\
-Host: www.example.com\r\n\r\n\
+GET / HTTP/1.1\r\n
+Host: www.example.com\r\n\r\n
 """
     assert create_response(msg) == http_msg('200 OK', 230, 'None')
 
 
 def test_get():
-    # method test if we send PUT instead of GET
     msg = b"""\
-PUT / HTTP/1.1\r\n\
-Host: www.example.com\r\n\
+PUT / HTTP/1.1\r\n
+Host: www.example.com\r\n\r\n
+<CRLF>"
 """
     assert create_response(msg) == err_msg('405 Method Not Allowed')
 
 
 def test_uri():
-    # uri test if we send not root
     msg = b"""\
-GET /index.html HTTP/1.1\r\n\
-Host: www.example.com\r\n\
+GET /index.html HTTP/1.1\r\n
+Host: www.example.com\r\n\r\n
+<CRLF>"
 """
-    assert create_response(msg) == err_msg("404 Page Not Found")
+    assert create_response(msg) == err_msg('404 Page Not Found')
 
 
 def test_protocol():
-    # protocol test if we send 1.0
     msg = b"""\
-GET / HTTP/1.0\r\n\
-Host: www.example.com\r\n\
+GET / HTTP/1.0\r\n
+Host: www.example.com\r\n\r\n
+<CRLF>"
 """
-    assert create_response(msg) == err_msg("400 Bad Request")
+    assert create_response(msg) == err_msg('400 Bad Request')
 
 
 def test_protocol2():
-    # protocol test if we don't send http/1.1
     msg = b"""\
-GET / HTP\r\n\
-Host: www.example.com\r\n\
+GET / HTP\r\n
+Host: www.example.com\r\n\r\n
+<CRLF>"
 """
-    assert create_response(msg) == err_msg("400 Bad Request")
+    assert create_response(msg) == err_msg('400 Bad Request')
