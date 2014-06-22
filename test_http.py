@@ -1,4 +1,5 @@
-from http_server import create_uri_request
+from http_server import create_response
+
 
 def http_msg(msg_type):
     date_time = "2014-06-12 16:39:06.162234"
@@ -24,7 +25,7 @@ Host: www.example.com\r\n\r\n
 """)
     assert create_uri_request(msg) == http_msg('200 OK')
 
-# method test if we send PUT instead of GET
+
 def test_get():
     msg = b"""\
 PUT / HTTP/1.1\r\n
@@ -33,7 +34,7 @@ Host: www.example.com\r\n\r\n
 """
     assert create_uri_request(msg) == http_msg('405 Method Not Allowed')
 
-# uri test if we send not root
+
 def test_uri():
     msg = b"""\
 GET /index.html HTTP/1.1\r\n
@@ -42,7 +43,7 @@ Host: www.example.com\r\n\r\n
 """
     assert create_uri_request(msg) == http_msg('405 Method Not Allowed')
 
-# protocol test if we send 1.0
+
 def test_protocol():
     msg = b"""\
 GET / HTTP/1.0\r\n
@@ -52,7 +53,6 @@ Host: www.example.com\r\n\r\n
     assert create_uri_request(msg) == http_msg('400 Bad Request')
 
 
-# protocol test if we don't send http/1.1
 def test_protocol2():
     msg = b"""\
 GET / HTP\r\n
@@ -60,7 +60,3 @@ Host: www.example.com\r\n\r\n
 <CRLF>"
 """
     assert create_uri_request(msg) == http_msg('400 Bad Request')
-
-
-
-
