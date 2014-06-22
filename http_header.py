@@ -12,11 +12,15 @@ _http_tags = {}
 
 
 def create_http_response():
-    print _http_tags
-    print
-    _http_tags['date_time'] = datetime.datetime.now()
-    _http_tags['cont_len'] = len(_http_tags['content'])
-    byte_string = """\
+    # for tests
+    _http_tags['date_time'] = "2014-06-12 16:39:06.162234"
+    # _http_tags['date_time'] = datetime.datetime.now()
+    if 'content' not in _http_tags.keys():
+        _http_tags['content'] = ''
+        _http_tags['cont_type'] = 'None'
+    _http_tags['cont_len'] = 0
+
+    byte_string = b"""\
 HTTP/1.1 {msg_code}\r\n\
 Date: {date_time}\r\n\
 Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\r\n\
@@ -28,7 +32,7 @@ Connection: close\r\n\
 Content-Type: {cont_type}; charset=UTF-8\r\n\r\n\
 {content}
 """.format(**_http_tags)
-    return bytearray(byte_string)
+    return byte_string
 
 indentation = "----"
 
@@ -44,24 +48,28 @@ def list_dirs(uri, l, ind_level):
             list_dirs(os.path.abspath(new_dir), l, (ind_level+1))
 
 
-def check_uri_resource():
-    uri = _http_tags['uri']
+def create_uri_resource():
+    uri = str(_http_tags['uri'])
     file_name = os.path.split(uri)[1]
 
-    if os.path.isdir(_http_tags['uri']):
+    if os.path.isdir(uri):
         l = []
         list_dirs(uri, l, 1)
         _str = ''
         for item in l:
             _str += '\r\n' + item
         _http_tags['content'] = '{}'.format(_str)
-    elif not os.path.exists(uri):
-        return 404
     else:
         msg_cont = open(uri, 'rb').read()
         _http_tags['content'] = msg_cont
 
     _http_tags['cont_type'] = mimetypes.guess_type(file_name)[0]
+
+
+def check_uri_resource():
+    uri = str(_http_tags['uri'])
+    if not os.path.exists(uri):
+        return 404
 
 
 def check_request_method():
@@ -83,12 +91,8 @@ def check_request_protocol():
 
 def check_err_response():
     _error_code = 0
-    check_list = 0
-    try:
-        check_list = [check_request_method(), check_request_protocol(),
-                      check_request_uri(), check_uri_resource()]
-    except:
-        pass
+    check_list = [check_request_method(), check_request_protocol(),
+                        check_request_uri(), check_uri_resource()]
 
     if max(check_list):
         _error_code = filter(lambda x: x is not None, check_list).pop(0)
@@ -97,10 +101,11 @@ def check_err_response():
         err_msg = '{} {}'.format(_error_code, _err_tags.get(_error_code))
         _http_tags['msg_code'] = err_msg
     else:
+        create_uri_resource()
         _http_tags['msg_code'] = '200 OK'
 
 
-def create_response(recv_msg):
+def create_response(recv_msg=''):
     recv_msg = recv_msg.split('\r\n')
     _http_tags['method'], _http_tags['uri'], \
         _http_tags['protocol'] = recv_msg[0].split()[:3]
