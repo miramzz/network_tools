@@ -47,7 +47,6 @@ GET / HTTP/1.1\r\n
 Host: www.example.com\r\n\r\n
 """
     assert create_response(msg) == http_msg('200 OK', 230, 'None')
-    assert gevent_server()
 
 
 def test_get():
