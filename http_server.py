@@ -92,11 +92,11 @@ def echo_server():
         while  True:
             recv_msg = conn.recv(buffsize)
             my_msg += recv_msg
-            if (len(recv_msg) < buffsize):
+            if "\r\n\r\n" in recv_msg:
                 break
-        conn.shutdown(socket.SHUT_RD)
+        #conn.shutdown(socket.SHUT_RD)
         conn.sendall(create_response(my_msg))
-        conn.shutdown(socket.SHUT_WR)
+        #conn.shutdown(socket.SHUT_WR)
         conn.close()
 
     my_socket.close()
