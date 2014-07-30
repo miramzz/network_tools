@@ -94,8 +94,8 @@ def check_request_method():
 def check_request_uri():
     if _http_tags['uri'][0] != '/':
         return 404
-    _http_tags['uri'] = '/Users/muazzezmira/Desktop/webroot' \
-        + _http_tags['uri']
+    base_dir = os.getcwd() + '/webroot'
+    _http_tags['uri'] = base_dir + _http_tags['uri']
 
 
 def check_request_protocol():
